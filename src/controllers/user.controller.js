@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt')
 const saltRounds = 12
 const helpers = require('../helpers/helpers')
-const errorHandling = require('../helpers/errorHandling')
 const userModels = require('../models/user.model')
 const phoneModel = require('../models/phone.model')
 const fs = require('fs')

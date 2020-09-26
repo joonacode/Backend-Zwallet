@@ -1,6 +1,4 @@
 const helpers = require('../helpers/helpers')
-const errorHandling = require('../helpers/errorHandling')
-const phoneModels = require('../models/phone.model')
 const historyModels = require('../models/history.model')
 const userModels = require('../models/user.model')
 

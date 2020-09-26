@@ -21,11 +21,6 @@ router
   .post('/transfer', verifyToken, checkTransfer, historyController.transfer)
   .post('/topup', verifyToken, uploadFile, checkTopup, historyController.topup)
   .patch('/status-topup/:id', verifyToken, isAdmin, historyController.changeStatusTopUp)
-  // .post('/login', checkLogin, historyController.login)
-  // .post('/verify-account', historyController.verifyAccount)
-  // .post('/request-reset-password', checkReqResetPassword, historyController.requestResetPassword)
-  // .post('/verify-reset-password', historyController.verifyResetPassword)
-  // .post('/reset-password', checkResetPassword, historyController.resetPassword)
   .get('/:id', verifyToken, historyController.detailHistory)
 
 module.exports = router

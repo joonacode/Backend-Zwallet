@@ -86,12 +86,6 @@ const history = {
   updateHistory: (dataHistory, id) => {
     return queryHelper('UPDATE history SET ? WHERE id = ?', [dataHistory, id])
   },
-  deletePhone: (id) => {
-    return queryHelper('DELETE FROM phoneNumber WHERE id = ?', id)
-  },
-  deletePhoneByUser: (id) => {
-    return queryHelper('DELETE FROM phoneNumber WHERE userId = ?', id)
-  },
   addHistory: (history) => {
     return queryHelper('INSERT INTO history SET ?', history)
   }
