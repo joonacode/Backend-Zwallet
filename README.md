@@ -1,17 +1,17 @@
-# Toko Fuku API
+# Zwallet API
 
-Tokofuku is an online shop website that is made specifically for e-commerce purposes, for many features to support transactions in online stores
+Zwallet is....
 
 ## Build with
-* [Node.js](https://nodejs.org/en/)
-* [Express.js](https://expressjs.com/)
-* [Redis](https://redis.io/)
+
+- [Node.js](https://nodejs.org/en/)
+- [Express.js](https://expressjs.com/)
 
 ## Requirements
-* [Node.js](https://nodejs.org/en/)
-* [Redis](https://redis.io/)
-* [Postman](https://www.getpostman.com/) for testing
-* [Database](db_sipPos.sql)
+
+- [Node.js](https://nodejs.org/en/)
+- [Postman](https://www.getpostman.com/) for testing
+- [Database](db_zwallet.sql)
 
 ## Project setup
 
@@ -38,14 +38,12 @@ PORT = 4000
 DB_HOST = localhost
 DB_USER = root
 DB_PASSWORD = your_password
-DB_DATABASE = db_tokoFUku
+DB_DATABASE = db_zwallet
 PRIVATE_KEY = your_private_key
-PRIVATE_KEY_REFRESH_TOKEN = your_private_key
 BASE_URL = http://localhost:4000
 # For Redirect User When Click Link Activation. Just Change The 'localhost:8080'
-BASE_URL_FRONTEND = http://localhost:8080/verify-account
+BASE_URL_ACTIVATE = http://localhost:8080/verify-account
 BASE_URL_RESET_PASSWORD = http://localhost:8080/reset-password
-PORT_REDIS = 6379
 # For Send Email To User
 EMAIL_USER = your_email
 PASS_USER = your_password_email
@@ -59,7 +57,8 @@ npm run dev
 
 ## API documentation link
 
-See [Coming Soon](https://github.com/joonacode/backend-tokofuku)
+See [here](https://documenter.getpostman.com/view/8880894/TVKHTuW7)
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
