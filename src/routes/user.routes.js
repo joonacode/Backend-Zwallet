@@ -7,17 +7,24 @@ const {
   verifyToken,
   isAdmin
 } = require('../middlewares/auth')
-// const {
-//   checkUpdateProfile,
-//   checkUpdateStore
-// } = require('../middlewares/formErrorHandling')
+const {
+  checkAddUser,
+  checkChangePassword,
+  checkSetPin,
+  checkChangePin,
+  checkUpdateUser
+} = require('../middlewares/formErrorHandling')
 
 router
   .get('/', verifyToken, isAdmin, userController.getAllUser)
-// .patch('/profile/:id', verifyToken, isASC, uploadFile, checkUpdateProfile, userController.updateProfile)
-// .patch('/store/:id', verifyToken, isAdminOrSeller, uploadFile, checkUpdateStore, userController.updateStore)
+  .post('/', verifyToken, isAdmin, checkAddUser, userController.addUser)
+  .get('/profile', verifyToken, userController.getMyProfile)
+  .patch('/change-password', verifyToken, checkChangePassword, userController.changePassword)
+  .patch('/set-pin', verifyToken, checkSetPin, userController.setPin)
+  .patch('/change-pin', verifyToken, checkChangePin, userController.changePin)
+  .patch('/:id', verifyToken, uploadFile, checkUpdateUser, userController.updateUser)
 
-// .delete('/:id', verifyToken, isAdmin, userController.deleteUser)
-// .get('/profile', verifyToken, isASC, cacheDetailUser, userController.getUserById)
+  .delete('/:id', verifyToken, isAdmin, userController.deleteUser)
+  .get('/:id', userController.getUserById)
 
 module.exports = router

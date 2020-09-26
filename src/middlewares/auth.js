@@ -2,16 +2,16 @@ const jwt = require('jsonwebtoken')
 const helpers = require('../helpers/helpers')
 
 const verifyToken = (req, res, next) => {
-  if (!req.headers.authorization) return helpers.response(res, [], 403, null, null, 'No token provided')
+  if (!req.headers.authorization) return helpers.response(res, [], 403, 'No token provided', true)
   const token = req.headers.authorization.split(' ')[1]
   jwt.verify(token, process.env.PRIVATE_KEY, function (err, decoded) {
     if (err) {
       if (err.name === 'JsonWebTokenError') {
-        return helpers.response(res, [], 401, null, null, 'Token invalid')
+        return helpers.response(res, [], 401, 'Token invalid', true)
       } else if (err.name === 'TokenExpiredError') {
-        return helpers.response(res, [], 401, null, null, 'Token expired')
+        return helpers.response(res, [], 401, 'Token expired', true)
       } else {
-        return helpers.response(res, [], 401, null, null, err)
+        return helpers.response(res, [], 401, err, true)
       }
     }
     req.userId = decoded.data.id
@@ -25,7 +25,7 @@ const isAdmin = (req, res, next) => {
     next()
     return
   }
-  return helpers.response(res, [], 403, null, null, 'Only admin can access')
+  return helpers.response(res, [], 403, 'Only admin can access', true)
 }
 
 
@@ -34,7 +34,7 @@ const isAdminOrUer = (req, res, next) => {
     next()
     return
   }
-  return helpers.response(res, [], 403, null, null, 'Only user and admin can access')
+  return helpers.response(res, [], 403, 'Only user and admin can access', true)
 }
 
 const auth = {

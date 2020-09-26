@@ -34,39 +34,40 @@ const auth = {
                 expiresIn: '3h',
               },
             )
-            const mailinfo = {
-              from: 'joonacode@gmail.com',
-              to: email,
-              subject: 'Activate Account Zwallet',
-              html: `<p>
-                    Click this link to <strong>activate</strong> your account: <a href="${process.env.BASE_URL_ACTIVATE}?token=${token}" target="_blank">Activate</a>
-                  </p>
-                  <small>link expires in 3 hours</small>`,
-            }
-            helpers.transporter(mailinfo, () => {
-              userModels
-                .getUserById(response.insertId)
-                .then((responseUser) => {
-                  tokenModels
-                    .sendToken({
-                      token,
-                      userId: response.insertId,
-                      type: 1
-                    })
-                    .then((resToken) => console.log(`Token send to ${email}`))
-                  const resultUser = responseUser[0]
-                  delete resultUser.password
-                  helpers.response(
-                    res,
-                    resultUser,
-                    res.statusCode,
-                    helpers.status.insert
-                  )
-                })
-                .catch((err) => {
-                  helpers.response(res, [], err.statusCode, err, true)
-                })
-            })
+            userModels
+              .getUserById(response.insertId)
+              .then((responseUser) => {
+                tokenModels
+                  .sendToken({
+                    token,
+                    userId: response.insertId,
+                    type: 1
+                  })
+                  .then((resToken) => console.log(`Token send to ${email}`))
+                const resultUser = responseUser[0]
+                delete resultUser.password
+                helpers.response(
+                  res,
+                  resultUser,
+                  res.statusCode,
+                  helpers.status.insert
+                )
+              })
+              .catch((err) => {
+                helpers.response(res, [], err.statusCode, err, true)
+              })
+            // const mailinfo = {
+            //   from: 'joonacode@gmail.com',
+            //   to: email,
+            //   subject: 'Activate Account Zwallet',
+            //   html: `<p>
+            //         Click this link to <strong>activate</strong> your account: <a href="${process.env.BASE_URL_ACTIVATE}?token=${token}" target="_blank">Activate</a>
+            //       </p>
+            //       <small>link expires in 3 hours</small>`,
+            // }
+            // helpers.transporter(mailinfo, () => {
+
+            // })
           })
           .catch((error) => {
             helpers.response(res, [], 400, error, true)

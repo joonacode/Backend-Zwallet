@@ -34,8 +34,8 @@ const upload = multer(obj).single('image')
 const uploadFile = (req, res, next) => {
   upload(req, res, function (error) {
     if (error) {
-      if (error.code === 'LIMIT_FILE_SIZE') return helpers.response(res, [], 400, null, null, ['Max file size 2mb'])
-      return helpers.response(res, [], 400, null, null, error)
+      if (error.code === 'LIMIT_FILE_SIZE') return helpers.response(res, [], 400, 'Max file size 2mb', true)
+      return helpers.response(res, [], 400, error, true)
     } else {
       next()
     }

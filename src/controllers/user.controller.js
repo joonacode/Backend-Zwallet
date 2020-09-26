@@ -3,206 +3,189 @@ const saltRounds = 12
 const helpers = require('../helpers/helpers')
 const errorHandling = require('../helpers/errorHandling')
 const userModels = require('../models/user.model')
+const phoneModel = require('../models/phone.model')
 const fs = require('fs')
 
 const user = {
   getAllUser: (req, res) => {
     const id = req.userId
-    if (!id) return helpers.response(res, [], 400, null, null, ['Id not found'])
+    if (!id) return helpers.response(res, [], 400, ['Id not found'], true)
     const order = req.query.order || 'DESC'
     userModels
       .getAllUser(id, order)
       .then((response) => {
         const newResponse = response
-        helpers
-          .redisInstance()
-          .setex('getAllUsers', 60 * 60 * 12, JSON.stringify(newResponse))
-        helpers.response(res, newResponse, 200, helpers.status.found, [])
+        helpers.response(res, newResponse, 200, helpers.status.found)
       })
       .catch((err) => {
-        helpers.response(res, [], err.statusCode, null, null, err)
+        helpers.response(res, [], err.statusCode, err, true)
       })
   },
-  getUserById: (req, res) => {
+  getMyProfile: (req, res) => {
     const id = req.userId
     userModels
       .getUserById(id)
       .then((response) => {
         const newRes = response[0]
         delete newRes.password
-        helpers
-          .redisInstance()
-          .setex('getDetailUser', 60 * 60 * 12, JSON.stringify(newRes))
-        helpers.response(res, newRes, 200, helpers.status.found, [])
+        helpers.response(res, newRes, 200, helpers.status.found)
       })
       .catch((err) => {
-        helpers.response(res, [], err.statusCode, null, null, err)
+        helpers.response(res, [], err.statusCode, err, true)
       })
   },
-  updateProfile: async (req, res) => {
-    const {
-      name,
-      oldImage,
-      phone,
-      gender,
-      dateBirth
-    } = req.body
-
+  getUserById: (req, res) => {
     const id = req.params.id
-    let image
-    if (req.file) image = req.file.path
-    if (req.uploadErrorMessage)
-      return helpers.response(res, [], 400, null, null, [
-        req.uploadErrorMessage,
-      ])
-
-    let finalImage
-    if (image) {
-      if (oldImage === '' || oldImage === 'null' || oldImage === null || !oldImage) {
-        finalImage = `${process.env.BASE_URL}/${image}`
-      } else {
-        finalImage = `${process.env.BASE_URL}/${image}`
-        const pathDelete = oldImage.replace(process.env.BASE_URL, '.')
-        fs.unlinkSync(pathDelete, (error) => {
-          if (error) throw error
-        })
-      }
-    } else {
-      finalImage = oldImage
-    }
-    const newUser = {
-      name,
-      phone,
-      image: finalImage,
-      gender,
-      dateBirth,
-      updatedAt: new Date()
-    }
     userModels
-      .updateUser(newUser, id)
+      .getUserById(id)
       .then((response) => {
-        helpers.redisInstance().del('getAllUsers')
-        userModels
-          .getUserById(id)
-          .then((responseUser) => {
-            helpers.redisInstance().del('getDetailUser')
-            const resultUser = responseUser[0]
-            delete resultUser.password
-            helpers.response(
-              res,
-              resultUser,
-              res.statusCode,
-              helpers.status.update,
-              null,
-            )
-          })
-          .catch((err) => {
-            helpers.response(res, [], err.statusCode, null, null, err)
-          })
+        const newRes = response[0]
+        delete newRes.password
+        helpers.response(res, newRes, 200, helpers.status.found2)
       })
-      .catch((error) => {
-        helpers.response(
-          res,
-          [],
-          error.statusCode,
-          null,
-          null,
-          error.errno === 1452 ? ['Role not found'] : error,
-        )
+      .catch((err) => {
+        helpers.response(res, [], err.statusCode, err, true)
       })
   },
-  updateStore: async (req, res) => {
+
+  addUser: (req, res) => {
     const {
-      storeName,
-      phone,
-      storeDescription,
-      oldImage,
+      firstName,
+      lastName,
+      username,
+      email,
+      roleId,
+      password
     } = req.body
-
-    const id = req.params.id
-    let image
-    if (req.file) image = req.file.path
-    if (req.uploadErrorMessage)
-      return helpers.response(res, [], 400, null, null, [
-        req.uploadErrorMessage,
-      ])
-
-    let finalImage
-    if (image) {
-      if (oldImage === '' || oldImage === 'null' || oldImage === null || !oldImage) {
-        finalImage = `${process.env.BASE_URL}/${image}`
-      } else {
-        finalImage = `${process.env.BASE_URL}/${image}`
-        const pathDelete = oldImage.replace(process.env.BASE_URL, '.')
-        fs.unlinkSync(pathDelete, (error) => {
-          if (error) throw error
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      bcrypt.hash(password, salt, function (err, hash) {
+        const newUser = {
+          firstName,
+          lastName,
+          username,
+          email,
+          roleId,
+          password: hash,
+          status: 1
+        }
+        userModels.signup(newUser).then(response => {
+          userModels
+            .getUserById(response.insertId)
+            .then((responseUser) => {
+              const resultUser = responseUser[0]
+              delete resultUser.password
+              helpers.response(
+                res,
+                resultUser,
+                res.statusCode,
+                helpers.status.insert
+              )
+            })
+            .catch((err) => {
+              helpers.response(res, [], err.statusCode, err, true)
+            })
+        }).catch((err) => {
+          if (err.errno === 1452) {
+            helpers.response(res, [], err.statusCode, 'Role id not found', true)
+          } else {
+            helpers.response(res, [], err.statusCode, err, true)
+          }
         })
-      }
-    } else {
-      finalImage = oldImage
-    }
-    const newUser = {
-      storeName,
-      phone,
-      storeDescription,
-      storeImage: finalImage,
-      updatedAt: new Date()
-    }
-    userModels
-      .updateUser(newUser, id)
-      .then((response) => {
-
-        helpers.redisInstance().del('getAllUsers')
-        userModels
-          .getUserById(id)
-          .then((responseUser) => {
-            helpers.redisInstance().del('getDetailUser')
-            const resultUser = responseUser[0]
-            delete resultUser.password
-            helpers.response(
-              res,
-              resultUser,
-              res.statusCode,
-              helpers.status.update,
-              null,
-            )
-          })
-          .catch((err) => {
-            helpers.response(res, [], err.statusCode, null, null, err)
-          })
       })
-      .catch((error) => {
-        helpers.response(
-          res,
-          [],
-          error.statusCode,
-          null,
-          null,
-          error.errno === 1452 ? ['Role not found'] : error,
-        )
-      })
+    })
   },
+
+  changePassword: (req, res) => {
+    const {
+      newPassword
+    } = req.body
+    const id = req.userId
+    bcrypt.hash(newPassword, saltRounds, function (err, hash) {
+      userModels.updateUser({
+        password: hash
+      }, id).then(response => {
+        helpers.response(res, [], 200, 'Password changed successfully')
+      }).catch(err => {
+        helpers.response(res, [], err.statusCode, err, true)
+
+      })
+    });
+  },
+
+  setPin: (req, res) => {
+    const {
+      pin
+    } = req.body
+    const id = req.userId
+    userModels.updateUser({
+      pin
+    }, id).then(response => {
+      helpers.response(res, [], 200, 'Pin changed successfully')
+    }).catch(err => {
+      helpers.response(res, [], err.statusCode, err, true)
+
+    })
+  },
+
+  changePin: (req, res) => {
+    const {
+      newPin
+    } = req.body
+    const id = req.userId
+    if (!newPin) return helpers.response(res, [], 400, 'New pin required', true)
+    if (newPin.length < 6) return helpers.response(res, [], 400, 'New pin must be 6 characters', true)
+    userModels.updateUser({
+      pin: newPin
+    }, id).then(response => {
+      helpers.response(res, [], 200, 'Pin changed successfully')
+    }).catch(err => {
+      helpers.response(res, [], err.statusCode, err, true)
+    })
+  },
+
   deleteUser: (req, res) => {
     const id = req.params.id
+    phoneModel.deletePhoneByUser(id).then(resPhone => {
+        console.log('ok')
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     userModels
       .deleteUser(id)
       .then((response) => {
-        const resultUser = response
-        resultUser.userId = Number(id)
-        helpers.redisInstance().del('getAllUsers')
-        helpers.redisInstance().del('getDetailUser')
-        helpers.response(
-          res,
-          resultUser,
-          res.statusCode,
-          helpers.status.delete,
-          null,
-        )
+        helpers.response(res, [], 200, helpers.status.delete)
       })
       .catch((err) => {
-        helpers.response(res, [], err.statusCode, null, null, err)
+        helpers.response(res, [], err.statusCode, err, true)
       })
-  }
+  },
+
+  updateUser: (req, res) => {
+    const {
+      firstName,
+      lastName,
+      username,
+    } = req.body
+    const id = req.params.id
+
+    if (req.uploadErrorMessage)
+      return helpers.response(res, [], 400, req.uploadErrorMessage, true)
+    const updateUser = {
+      firstName,
+      lastName,
+      username: username.toLowerCase()
+    }
+    if (req.file) {
+      updateUser.image = `${process.env.BASE_URL}/${req.file.path}`
+    }
+    userModels.updateUser(updateUser, id)
+      .then(response => {
+        helpers.response(res, [], 200, helpers.status.update)
+      }).catch((err) => {
+        helpers.response(res, [], err.statusCode, err, true)
+      })
+  },
 }
 
 module.exports = user

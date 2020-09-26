@@ -5,7 +5,7 @@ const {
   checkSignup,
   checkLogin,
   checkReqResetPassword,
-  checkChangePassword
+  checkResetPassword
 } = require('../middlewares/formErrorHandling')
 
 router
@@ -14,6 +14,6 @@ router
   .post('/verify-account', authController.verifyAccount)
   .post('/request-reset-password', checkReqResetPassword, authController.requestResetPassword)
   .post('/verify-reset-password', authController.verifyResetPassword)
-  .post('/reset-password', checkChangePassword, authController.resetPassword)
+  .post('/reset-password', checkResetPassword, authController.resetPassword)
 
 module.exports = router
