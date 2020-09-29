@@ -48,16 +48,12 @@ const history = {
       historyModels.getMyIncomeTransfer(id).then(resTransfer => {
         let total
         const newResTransfer = resTransfer[0].incomeTransfer
-        if (!newResTransfer && !newRes) {
-          total = 0
-        } else if (!newResTransfer) {
+        if (!newResTransfer) {
           total = Number(newRes)
-        } else if (newResTransfer) {
-          total = Number(newResTransfer)
         } else if (newResTransfer && newRes) {
           total = Number(newRes) + Number(newResTransfer)
         } else {
-          total = 0
+          total = Number(newResTransfer)
         }
         helpers.response(res, {
           income: total
