@@ -83,6 +83,12 @@ const history = {
           on history.senderId = sender.id WHERE history.userId = ${id} ORDER BY history.id ${order ? order : 'desc'}`,
     )
   },
+  getMyIncome: (id) => {
+    return queryHelper(`SELECT SUM(amount) as income FROM history WHERE userId = ${id} AND status = 2 AND statusTopup = 1`)
+  },
+  getMyOutcome: (id) => {
+    return queryHelper(`SELECT SUM(amount) as outcome FROM history WHERE userId = ${id} AND status = 1`)
+  },
   updateHistory: (dataHistory, id) => {
     return queryHelper('UPDATE history SET ? WHERE id = ?', [dataHistory, id])
   },

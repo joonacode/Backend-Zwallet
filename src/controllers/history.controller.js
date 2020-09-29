@@ -31,6 +31,24 @@ const history = {
       helpers.response(res, [], err.statusCode, err, true)
     })
   },
+  getMyIncome: (req, res) => {
+    const id = req.userId
+    historyModels.getMyIncome(id).then(response => {
+      helpers.response(res, response[0], 200, helpers.status.found)
+
+    }).catch(err => {
+      helpers.response(res, [], err.statusCode, err, true)
+    })
+  },
+  getMyOutcome: (req, res) => {
+    const id = req.userId
+    historyModels.getMyOutcome(id).then(response => {
+      helpers.response(res, response[0], 200, helpers.status.found)
+
+    }).catch(err => {
+      helpers.response(res, [], err.statusCode, err, true)
+    })
+  },
   transfer: (req, res) => {
     const {
       receiverId,

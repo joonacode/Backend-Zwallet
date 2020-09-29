@@ -18,6 +18,8 @@ router
   .get('/', verifyToken, isAdmin, historyController.getAllHistory)
   .get('/get-topup', verifyToken, isAdmin, historyController.getAllTopup)
   .get('/my-history', verifyToken, historyController.getMyHistory)
+  .get('/my-income', verifyToken, historyController.getMyIncome)
+  .get('/my-outcome', verifyToken, historyController.getMyOutcome)
   .post('/transfer', verifyToken, checkTransfer, historyController.transfer)
   .post('/topup', verifyToken, uploadFile, checkTopup, historyController.topup)
   .patch('/status-topup/:id', verifyToken, isAdmin, historyController.changeStatusTopUp)
