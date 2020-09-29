@@ -66,7 +66,9 @@ const user = {
             }, id).then(response => {
               userModels.updateUser({
                 phoneNumber: detailPhone.phoneNumber
-              }, idUser).then(resPhone => console.log('ok'))
+              }, idUser).then(resPhone =>
+                helpers.response(res, [], 200, helpers.status.update)
+              )
             })
           })
         }
