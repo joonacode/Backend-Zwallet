@@ -89,8 +89,11 @@ const history = {
   getMyIncome: (id) => {
     return queryHelper(`SELECT SUM(amount) as income FROM history WHERE userId = ${id} AND status = 2 AND statusTopup = 1`)
   },
+  getMyIncomeTransfer: (id) => {
+    return queryHelper(`SELECT SUM(amount) as incomeTransfer FROM history WHERE userId = ${id} AND status = 1 AND receiverId = ${id}`)
+  },
   getMyOutcome: (id) => {
-    return queryHelper(`SELECT SUM(amount) as outcome FROM history WHERE userId = ${id} AND status = 1`)
+    return queryHelper(`SELECT SUM(amount) as outcome FROM history WHERE userId = ${id} AND status = 1 AND senderId = ${id}`)
   },
   updateHistory: (dataHistory, id) => {
     return queryHelper('UPDATE history SET ? WHERE id = ?', [dataHistory, id])

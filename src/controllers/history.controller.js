@@ -44,8 +44,25 @@ const history = {
   getMyIncome: (req, res) => {
     const id = req.userId
     historyModels.getMyIncome(id).then(response => {
-      helpers.response(res, response[0], 200, helpers.status.found)
-
+      const newRes = response[0].income
+      historyModels.getMyIncomeTransfer(id).then(resTransfer => {
+        let total
+        const newResTransfer = resTransfer[0].incomeTransfer
+        if (!newResTransfer && !newRes) {
+          total = 0
+        } else if (!newResTransfer) {
+          total = Number(newRes)
+        } else if (newResTransfer) {
+          total = Number(newResTransfer)
+        } else if (newResTransfer && newRes) {
+          total = Number(newRes) + Number(newResTransfer)
+        } else {
+          total = 0
+        }
+        helpers.response(res, {
+          income: total
+        }, 200, helpers.status.found)
+      })
     }).catch(err => {
       helpers.response(res, [], err.statusCode, err, true)
     })
@@ -53,7 +70,16 @@ const history = {
   getMyOutcome: (req, res) => {
     const id = req.userId
     historyModels.getMyOutcome(id).then(response => {
-      helpers.response(res, response[0], 200, helpers.status.found)
+      let total
+      const newResponse = response[0].outcome
+      if (!newResponse) {
+        total = 0
+      } else {
+        total = newResponse
+      }
+      helpers.response(res, {
+        outcome: total
+      }, 200, helpers.status.found)
 
     }).catch(err => {
       helpers.response(res, [], err.statusCode, err, true)
