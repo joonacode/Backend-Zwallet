@@ -4,7 +4,7 @@ const userModels = require('../models/user.model')
 
 const history = {
   getAllHistory: (req, res) => {
-    const order = req.params.order || null
+    const order = req.query.order || null
     historyModels.getAllHistory(order).then(response => {
       helpers.response(res, response, 200, helpers.status.found)
 
@@ -13,7 +13,7 @@ const history = {
     })
   },
   getAllTopup: (req, res) => {
-    const order = req.params.order || null
+    const order = req.query.order || null
     historyModels.getAllTopup(order).then(response => {
       helpers.response(res, response, 200, helpers.status.found)
 
@@ -23,7 +23,7 @@ const history = {
   },
   getMyHistory: (req, res) => {
     const id = req.userId
-    const order = req.params.order || null
+    const order = req.query.order || null
     historyModels.getMyHistory(id, order).then(response => {
       helpers.response(res, response, 200, helpers.status.found)
 
