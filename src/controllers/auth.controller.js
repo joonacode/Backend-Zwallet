@@ -179,7 +179,7 @@ const auth = {
             const mailinfo = {
               from: 'joonacode@gmail.com',
               to: email,
-              subject: 'Reset Password Toko Fuku',
+              subject: 'Reset Password Zwallet',
               html: `
               <center>
               <h1>Request to Reset Your Account Password</h1>
