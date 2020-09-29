@@ -66,7 +66,7 @@ const history = {
           on history.senderId = sender.id WHERE history.id = ${id} AND history.status = 2`,
     )
   },
-  getMyHistory: (id, order) => {
+  getMyHistory: (id, order, limit, offset) => {
     return queryHelper(
       `SELECT 
         history.*,
@@ -80,8 +80,11 @@ const history = {
         INNER JOIN users as receiver
           on history.receiverId = receiver.id
         INNER JOIN users as sender
-          on history.senderId = sender.id WHERE history.userId = ${id} ORDER BY history.id ${order ? order : 'desc'}`,
+          on history.senderId = sender.id WHERE history.userId = ${id} ORDER BY history.id ${order ? order : 'desc'} LIMIT ${limit} OFFSET ${offset}`,
     )
+  },
+  getTotal: (id) => {
+    return queryHelper(`SELECT COUNT(*) AS total FROM history WHERE userId = ${id}`)
   },
   getMyIncome: (id) => {
     return queryHelper(`SELECT SUM(amount) as income FROM history WHERE userId = ${id} AND status = 2 AND statusTopup = 1`)

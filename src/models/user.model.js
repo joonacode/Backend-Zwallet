@@ -2,10 +2,16 @@ const connection = require('../config/db.config')
 const queryHelper = require('../helpers/query')
 
 const user = {
-  getAllUser: (id, order) => {
+  getAllUser: (id, order, limit, offset, search, orderBy) => {
     return queryHelper(
-      `SELECT users.*, role.name as roleName FROM users JOIN role WHERE users.roleId = role.id AND users.id != ${id} ORDER BY id ${order}`,
+      `SELECT users.*, role.name as roleName FROM users JOIN role WHERE users.roleId = role.id AND users.id != ${id} AND roleId = 2 AND status = 1 ${search ? `AND users.fullName LIKE '%${search}%'` : ''} ORDER BY ${orderBy} ${order} LIMIT ${limit} OFFSET ${offset}`,
     )
+  },
+  getTotal: (id) => {
+    return queryHelper(`SELECT COUNT(*) AS total FROM users WHERE status = 1 AND roleId = 2 AND users.id != ${id}`)
+  },
+  getTotalSearch: (id, query) => {
+    return queryHelper(`SELECT * FROM users WHERE status = 1 AND roleId = 2 AND users.id != ? AND  fullName LIKE ?`, [id, `%${query}%`])
   },
   getUserById: (id) => {
     return queryHelper(

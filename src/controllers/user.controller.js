@@ -4,17 +4,34 @@ const helpers = require('../helpers/helpers')
 const userModels = require('../models/user.model')
 const phoneModel = require('../models/phone.model')
 const fs = require('fs')
-
+let totalData
 const user = {
   getAllUser: (req, res) => {
     const id = req.userId
     if (!id) return helpers.response(res, [], 400, ['Id not found'], true)
+    const limit = Number(req.query.limit) || 10
+    const page = !req.query.page ? 1 : req.query.page
+    const offset = (Number(page) === 0 ? 1 : page - 1) * limit
+    const search = req.query.search || null
+    const orderBy = req.query.orderby || 'id'
     const order = req.query.order || 'DESC'
+    if (search) {
+      userModels.getTotalSearch(id, search).then(response => {
+        totalData = response.length
+      }).catch(err => console.log(err))
+    } else {
+      userModels.getTotal(id).then(response => {
+        totalData = response[0].total
+      }).catch(err => console.log(err))
+    }
     userModels
-      .getAllUser(id, order)
+      .getAllUser(id, order, limit, offset, search, orderBy)
       .then((response) => {
         const newResponse = response
-        helpers.response(res, newResponse, 200, helpers.status.found)
+        const count = newResponse.length
+        const total = totalData
+        const links = helpers.links(limit, page, total, count)
+        helpers.response(res, newResponse, 200, helpers.status.found, false, links)
       })
       .catch((err) => {
         helpers.response(res, [], err.statusCode, err, true)

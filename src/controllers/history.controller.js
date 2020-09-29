@@ -1,7 +1,7 @@
 const helpers = require('../helpers/helpers')
 const historyModels = require('../models/history.model')
 const userModels = require('../models/user.model')
-
+let totalData
 const history = {
   getAllHistory: (req, res) => {
     const order = req.query.order || null
@@ -23,9 +23,19 @@ const history = {
   },
   getMyHistory: (req, res) => {
     const id = req.userId
+    const limit = Number(req.query.limit) || 10
+    const page = !req.query.page ? 1 : req.query.page
+    const offset = (Number(page) === 0 ? 1 : page - 1) * limit
     const order = req.query.order || null
-    historyModels.getMyHistory(id, order).then(response => {
-      helpers.response(res, response, 200, helpers.status.found)
+    historyModels.getTotal(id).then(response => {
+      totalData = response[0].total
+    }).catch(err => console.log(err))
+    historyModels.getMyHistory(id, order, limit, offset).then(response => {
+      const newResponse = response
+      const count = newResponse.length
+      const total = totalData
+      const links = helpers.links(limit, page, total, count)
+      helpers.response(res, newResponse, 200, helpers.status.found, false, links)
 
     }).catch(err => {
       helpers.response(res, [], err.statusCode, err, true)
