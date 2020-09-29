@@ -125,7 +125,7 @@ const history = {
         historyModels.updateHistory({
           statusTopup: status
         }, id).then(response => {
-          if (status === '2') {
+          if (Number(status) === 2) {
             helpers.response(res, [], 200, 'Status changed successfully')
           } else {
             userModels.getUserById(detail.userId).then(respon => {
