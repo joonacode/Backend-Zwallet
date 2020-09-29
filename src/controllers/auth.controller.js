@@ -140,13 +140,13 @@ const auth = {
           }
         } else {
           tokenModels.activateAccount(decoded.data).then(responseActivate => {
+            tokenModels.deleteToken(token).then(deleteResponse => console.log('token deleted'))
             helpers.response(
               res,
               responseActivate,
-              res.statusCode,
+              200,
               'Account successfully activate'
             )
-            tokenModels.deleteToken(token).then(deleteResponse => console.log('token deleted'))
           })
         }
       })

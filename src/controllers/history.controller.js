@@ -4,7 +4,8 @@ const userModels = require('../models/user.model')
 
 const history = {
   getAllHistory: (req, res) => {
-    historyModels.getAllHistory().then(response => {
+    const order = req.params.order || null
+    historyModels.getAllHistory(order).then(response => {
       helpers.response(res, response, 200, helpers.status.found)
 
     }).catch(err => {
@@ -12,7 +13,8 @@ const history = {
     })
   },
   getAllTopup: (req, res) => {
-    historyModels.getAllTopup().then(response => {
+    const order = req.params.order || null
+    historyModels.getAllTopup(order).then(response => {
       helpers.response(res, response, 200, helpers.status.found)
 
     }).catch(err => {
@@ -21,7 +23,8 @@ const history = {
   },
   getMyHistory: (req, res) => {
     const id = req.userId
-    historyModels.getMyHistory(id).then(response => {
+    const order = req.params.order || null
+    historyModels.getMyHistory(id, order).then(response => {
       helpers.response(res, response, 200, helpers.status.found)
 
     }).catch(err => {
@@ -82,7 +85,7 @@ const history = {
     } = req.body
     const id = req.params.id
     if (!status) return helpers.response(res, [], 400, 'Status required', true)
-    if (status !== '2' && status !== '1') return helpers.response(res, [], 400, 'Status invalid', true)
+    if (Number(status) !== 2 && Number(status) !== 1) return helpers.response(res, [], 400, 'Status invalid', true)
 
     historyModels.getDetailHistoryTopup(id).then(response => {
       const detail = response[0]

@@ -59,6 +59,7 @@ const user = {
     bcrypt.genSalt(saltRounds, function (err, salt) {
       bcrypt.hash(password, salt, function (err, hash) {
         const newUser = {
+          fullName: `${firstName} ${lastName}`,
           firstName,
           lastName,
           username,
@@ -171,6 +172,7 @@ const user = {
     if (req.uploadErrorMessage)
       return helpers.response(res, [], 400, req.uploadErrorMessage, true)
     const updateUser = {
+      fullName: `${firstName} ${lastName}`,
       firstName,
       lastName,
       username: username.toLowerCase()

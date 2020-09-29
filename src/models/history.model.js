@@ -66,7 +66,7 @@ const history = {
           on history.senderId = sender.id WHERE history.id = ${id} AND history.status = 2`,
     )
   },
-  getMyHistory: (id) => {
+  getMyHistory: (id, order) => {
     return queryHelper(
       `SELECT 
         history.*,
@@ -80,7 +80,7 @@ const history = {
         INNER JOIN users as receiver
           on history.receiverId = receiver.id
         INNER JOIN users as sender
-          on history.senderId = sender.id WHERE history.userId = ${id}`,
+          on history.senderId = sender.id WHERE history.userId = ${id} ORDER BY history.id ${order ? order : 'desc'}`,
     )
   },
   updateHistory: (dataHistory, id) => {

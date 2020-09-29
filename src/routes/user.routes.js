@@ -16,7 +16,7 @@ const {
 } = require('../middlewares/formErrorHandling')
 
 router
-  .get('/', verifyToken, isAdmin, userController.getAllUser)
+  .get('/', verifyToken, userController.getAllUser)
   .post('/', verifyToken, isAdmin, checkAddUser, userController.addUser)
   .get('/profile', verifyToken, userController.getMyProfile)
   .patch('/change-password', verifyToken, checkChangePassword, userController.changePassword)
