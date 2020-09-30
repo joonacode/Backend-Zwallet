@@ -1,6 +1,6 @@
 # Zwallet API
 
-Zwallet is....
+Zwallet is an application that focussing in banking needs for all users the world.
 
 ## Build with
 
